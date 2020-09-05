@@ -23,7 +23,7 @@ footnotereturnlinkcontents = "↩"
 [params]
     description = "A website built through Hugo and blogdown."
 	profilePicture = "images/ralphie.jpg"
-    footer = "[Github](https://github.com/richjand) | [LinkedIn](https://www.linkedin.com/in/richard-anderson-a9b445b2/) | [Twitter](https://www.twitter.com/richjand)"
+    footer = " [Github](https://github.com/richjand) | [LinkedIn](https://www.linkedin.com/in/richard-anderson-a9b445b2/) | [Twitter](https://www.twitter.com/richjand)"
 
 [markup]
   [markup.goldmark]
