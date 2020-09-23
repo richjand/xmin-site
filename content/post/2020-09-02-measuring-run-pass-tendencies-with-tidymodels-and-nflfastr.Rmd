@@ -1,7 +1,7 @@
 ---
 title: Measuring Run/Pass Tendencies with tidyModels and nflfastR
 author: Richard Anderson
-date: '2020-09-02'
+date: '2020-09-08'
 slug: measuring-run-pass-tendencies-with-tidymodels-and-nflfastr
 categories: []
 tags:
@@ -72,9 +72,17 @@ teams <- teams %>%
          qb_dropback_est_rank = rank(desc(mean_no_epa)))
 ```
 
+Note: A slightly revised version of this post was posted at [Open Source Football](https://www.opensourcefootball.com/posts/2020-09-07-estimating-runpass-tendencies-with-tidymodels-and-nflfastr/).
+
 As a Seahawks fan who spends a good amount of time online I've been exposed to a lot of discussion about the value of running vs. passing. A point used in favor of a rushing-focused attack is that good teams tend to run the ball a lot. This is usually met with the response that teams who are ahead will run to kill clock and minimize risk, meaning the causal arrow is backwards. The Patriots always run a lot, but the Patriots are always ahead so of course they are going to run.
 
 A common strategy to establish whether a team is run/pass heavy is to identify a subset of plays where the team is not bound by needing to pass to catch up or run to kill clock ([See Warren Sharp's Tweet](https://twitter.com/SharpFootball/status/1281657545598341121) and see what decisions teams actually made. If we see that the Patriots pass while games are competitive and run when they are closing out the game then we know that the Pats winning isn't caused by rushing. The problem with this approach is that it tends to throw away a lot of useful information. Seeing a team run on 2nd and 11 (again, Seahawks fan here) tells us something very different than seeing a team run on 2nd and 1 just as throwing on 3rd and 1 tells us something different than throwing on 3rd and 10. Thanks to the awesome people at nflscrapR and nflfastR we can build that kind of context into our analysis. 
+
+The basic roadmap for this post is
+
+  - Use tidyModels to classify plays as dropback/non-dropback
+  - Use model outputs as a variable in a multilevel model to estimate team tendencies
+  - Look at some basic findings from the multilevel model
 
 All of the code that you'll see below can be found at [My GitHub](https://github.com/richjand/nfl-run-pass).
 
@@ -92,9 +100,9 @@ $logit(p_{it}) = \alpha + \gamma_{t} + \beta_{1}\hat{p}_i + \boldsymbol\beta\tex
 
 where $y_{it}$ is going to be whether team $t$ called a pass on play $i$, $\gamma_{t}$ is a team effect which will be our measure of team strategy, and $\boldsymbol\beta\textbf{X}_{i}$ is going to be any other information we want to include such as quarterback ability, quality of defense, weather, or anything else of interest. $\hat{p}_i$ is the probability of a QB dropback that we'll generate with our model below. In effect, this will give us an expectation from which we'll measure deviances at the team level.
 
-Part of the impetus for this project was to learn how to use the [tidyModels](https://www.tidymodels.org/) and [parsnip](https://github.com/tidymodels/parsnip) packages so I'm going to cover how I built the models with these packages in some detail. I won't be offended if you want to skip ahead. Also, before getting into the details I'll link interested readers to posts by [Julia Silge](https://juliasilge.com/blog/xgboost-tune-volleyball/) and [Rebecca Barter](http://www.rebeccabarter.com/blog/2020-03-25_machine_learning/) which were extremely helpful in getting up and running in the tidyModels universe. I really can't overemphasize how good these two posts were.
+Part of the impetus for this project was to learn how to use the [tidyModels](https://www.tidymodels.org/) and [parsnip](https://github.com/tidymodels/parsnip) packages so we will cover how these packages were used to build the model in some detail. If you're interested in learning more about using tidyModels you should check out posts by [Julia Silge](https://juliasilge.com/blog/xgboost-tune-volleyball/) and [Rebecca Barter](http://www.rebeccabarter.com/blog/2020-03-25_machine_learning/) which were extremely helpful in getting up and running in the tidyModels universe.
 
-I predict the probability of a QB dropback using the nflfastR-provided variables that collectively capture the game state at the time of the play. These variables aren't an exhaustive list of what goes into the game state, but hopefully capture most of the information relevant to teams in making the decision to run or pass. The variables are:
+This is a classification problem where we will predict predict whether or not a play will be a QB dropback. I predict the probability of a QB dropback using the nflfastR-provided variables that collectively capture the game state at the time of the play. These variables aren't an exhaustive list of what goes into the game state, but hopefully capture most of the information relevant to teams in making the decision to run or pass. The variables are:
 
   - Down (limited to 1,2,3)
   - Yards for first down
@@ -106,12 +114,12 @@ I predict the probability of a QB dropback using the nflfastR-provided variables
   
 Note that a QB dropback is not the same as saying a pass occurred. QB dropbacks are plays where the offense intended to pass, even if they did not end up in an attempted pass (sacks, scrambles, etc...).
 
-I'm going to use an xgboost model because we know there are non-linearities in the relationship between independent variables and dependent variable as well as some complex interactions between the variables. I can't say anything about xgboost that hasn't been said better in a million other data science posts so I'll just say that I, like so many others, have found xgboost extremely useful for a variety of projects. That said, I've found the xgboost package to be a little difficult to work with which is why I'm excited to give tidyModels a try.
+We'll use an xgboost model because we know there are non-linearities in the relationship between independent variables and dependent variable as well as some complex interactions between the variables. I can't say anything about xgboost that hasn't been said better in a million other data science posts so I'll just say that I, like so many others, have found xgboost extremely useful for a variety of machine learning projects.
 
 ## Tidying my xgboost
 
 ### Prepping the Data
-The first step is going to be to split my data into train and test, which we can do with the <code>initial_split</code> function. By default this function will use 75% of the data for training and the remaining 25% for testing. I've limited the data to 2016-2019, which leaves ~100k observations for training and ~35k observations for testing.
+The first step is going to be to split the data into train and test which we can do with the <code>initial_split</code> function. By default this function will use 75% of the data for training and the remaining 25% for testing. We'll look at 2016-2019, which leaves ~100k observations for training and ~35k observations for testing.
 
 ```{r}
 dat_split <- initial_split(post16)
@@ -119,7 +127,7 @@ dat_train <- training(dat_split)
 dat_test <- testing(dat_split)
 ```
 
-We're going be tuning our xgboost hyperparameters so we'll want to cross-validate to see which hyperparameters give us the best performance. We can create cross-validation sets using <code>vfold_cv()</code>.
+We're going be tuning our xgboost hyperparameters so we'll want to perform some cross-validation to see which hyperparameters give us the best performance. We can create cross-validation sets using <code>vfold_cv()</code>.
 
 ```{r}
 qb_folds <- vfold_cv(dat_train)
@@ -127,7 +135,7 @@ qb_folds <- vfold_cv(dat_train)
 
 
 ### Prepping the Model
-Next we'll define a recipe using the <code>recipe()</code> function from the <code>recipes</code> package. Recipes involve setting a formula that looks like what you use to train most models in R and doing any pre-processing (scaling, normalizing, etc...) that you want to do to your variables. The nice thing about the recipe formulation is that it is the same regardless of which model you'll ultimately be using so you don't need to remember how data needs to be fed into <code>glmnet</code> vs. <code>xgboost</code> vs. <code>glm</code>. Since I'm working with xgboost I don't need to worry about normalizing or regularizing my variables so I'll just define my formula below.
+Next we'll define a recipe using the <code>recipe()</code> function from the <code>recipes</code> package. Recipes involve setting a formula that looks like what you use to train most models in R and doing any pre-processing (scaling, normalizing, imputing, etc...) that you want to do to your variables. The nice thing about the recipe formulation is that it is the same regardless of which model you'll ultimately be using so you don't need to remember how data needs to be fed into <code>glmnet</code> vs. <code>xgboost</code> vs. <code>glm</code>. xgboost doesn't require that data be regularized or normalized so we can specify our recipe as in the formula below, but if you do need to do some kind of pre-processing you can check out the dozens of packages in <code>recipes</code> that begin with <code>step_</code>.
 
 ```{r}
 qb_recipe <- recipe(qb_dropback ~ down + 
@@ -142,7 +150,7 @@ qb_recipe <- recipe(qb_dropback ~ down +
 
 ```
 
-Now that we have a recipe we will get our model set up. We're going to use a boosted tree model which carries with it a bunch of tuneable hyperparameters. I'm going to fix the number of trees to keep cross-validation from getting out of hand and tell the model to stop when there has been no improvement in 100 rounds. Everything else is going to be selected based on model fit.
+Now that we have a recipe we will get our model set up. We're going to use a boosted tree model which carries with it a bunch of tuneable hyperparameters. We will fix the number of trees to keep cross-validation from getting out of hand and tell the model to stop when there has been no improvement in 100 rounds. Everything else is going to be selected based on model fit.
 
 The <code>set_engine()</code> specifies the package that the model is coming from so if you preferred to use <code>gbm</code> instead of <code>xgboost</code> you would specify <code>set_engine("gbm")</code>.
 
@@ -173,7 +181,7 @@ qb_workflow <- workflow() %>%
 
 ### Parameter Tuning
 
-Now it's time to actually do some modeling! We'll use our cross-validation folds to try a bunch of different potential parameter values and return which gives us the best out of sample fit. We'll try 40 different combinations sampled from across the hyperparameter space. Note that the <code>mtry</code> and <code>sample_size</code> parameters require additional arguments. <code>mtry()</code> refers to the number of columns to be sampled at each split. This is one where you need to be careful. If the data frame you specify for <code>finizalize</code> has more variables than you actually plan on training with, you will waste your time testing mtry values that don't make any sense for your problem. The <code>sample_size</code> argument requires a number between 0 and 1 as it's the proportion of the data that you'll use in the fitting routine.
+Now it's time to actually do some modeling! We'll use our cross-validation folds to try a bunch of different potential hyperparameter values and return which gives us the best out of sample fit. We'll try 40 different combinations sampled from across the hyperparameter space. Note that the <code>mtry</code> and <code>sample_size</code> parameters require additional arguments. <code>mtry()</code> refers to the number of columns to be sampled at each split. This is one where you need to be careful. If the data frame you specify for <code>finizalize</code> has more variables than you actually plan on training with, you will waste your time testing mtry values that don't make any sense for your problem. The <code>sample_size</code> argument requires a number between 0 and 1 as it's the proportion of the data that you'll use in the fitting routine.
 
 ```{r}
 xgb_grid <- grid_latin_hypercube(
@@ -187,7 +195,7 @@ xgb_grid <- grid_latin_hypercube(
 )
 ```
 
-Tuning your grid is as easy as specifying a workflow, your cross-validation data, and the grid of values to be tested. I specify <code>save_pred = TRUE</code> which is going to save all of the cross-validation predictions for later evaluation. Note that this is going to take awhile. A grid of 40 took ~6 hours on my machine. I'd set this off overnight and save the results so you can reload the object without rebuilding every time.
+Tuning your grid is as easy as specifying a workflow, your cross-validation data, and the grid of values to be tested. <code>save_pred = TRUE</code> is going to save all of the cross-validation predictions for later evaluation. Note that this is going to take awhile. A grid of 40 took ~6 hours on my machine. I'd set this off overnight and save the results so you can reload the object without rebuilding every time.
 
 ```{r, eval = F}
   xgb_res <- tune_grid(
@@ -198,7 +206,7 @@ Tuning your grid is as easy as specifying a workflow, your cross-validation data
   )
 ```
 
-Julia Silge's post has a plot to show the relationship between different parameter values and model performance that I'm going to use here. On the y-axis we have the AUC of the model and on the x-axis we have the value of the hyperparameter. We're looking to see if there are any obvious correlations between performance and hyperparameter value and if we might need to expand the range of tested values. It's tough to draw any sweeping conclusions though it looks like higher values of mtry and, to a certain extent, tree depth perform better. It also doesn't appear that the best values of our hyperparameters are on the edges of our plots. Were it the case that performance was clearly increasing with higher tree depth and we didn't see a point at which model performance began to decline we would want to extend the range of hyperparameters that we test to make sure that we aren't setting those values too low.
+Julia Silge's post has a nice plot to show the relationship between different parameter values and model performance that we'll going to use here. On the y-axis we have the AUC of the model and on the x-axis we have the value of the hyperparameter. We're looking to see if there are any obvious correlations between performance and hyperparameter value and if we might need to expand the range of tested values. It's tough to draw any sweeping conclusions though it looks like higher values of mtry and, to a certain extent, tree depth perform better. It also doesn't appear that the best values of our hyperparameters are on the edges of our plots. Were it the case that performance was clearly increasing with higher tree depth and we didn't see a point at which model performance began to decline we would want to extend the range of hyperparameters that we test to make sure that we aren't setting those values too low.
 
 ```{r}
 xgb_res %>%
@@ -234,7 +242,7 @@ final_mod <- last_fit(qb_xgb, dat_split)
 ```
 
 ### Model Evaluation
-We can find out just how well the model did using <code>collect_metrics()</code>. We ended up with 69% accuracy and an AUC of .76 which seems about right given the application. If we could perfectly predict dropback probability from game state it would be very easy to be an NFL defensive coordinator. Again, Julia Silge did a great job visualizing model outputs in her post and I'm going to basically lift her code for this ROC curve plot
+We can find out just how well the model did using <code>collect_metrics()</code>. We ended up with 69% accuracy and an AUC of .76 which seems about right given the application. If we could perfectly predict dropback probability from game state it would be very easy to be an NFL defensive coordinator! Again, Julia Silge did a great job visualizing model outputs in her post so we will basically lift her code for this ROC curve plot
 
 ```{r}
 collect_metrics(final_mod)

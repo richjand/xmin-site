@@ -6,17 +6,17 @@
     <description>Recent content in R on Richard&#39;s Page</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 02 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 08 Sep 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Measuring Run/Pass Tendencies with tidyModels and nflfastR</title>
-      <link>/post/2020/09/02/measuring-run-pass-tendencies-with-tidymodels-and-nflfastr/</link>
-      <pubDate>Wed, 02 Sep 2020 00:00:00 +0000</pubDate>
+      <link>/post/2020/09/08/measuring-run-pass-tendencies-with-tidymodels-and-nflfastr/</link>
+      <pubDate>Tue, 08 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/2020/09/02/measuring-run-pass-tendencies-with-tidymodels-and-nflfastr/</guid>
+      <guid>/post/2020/09/08/measuring-run-pass-tendencies-with-tidymodels-and-nflfastr/</guid>
       <description>As a Seahawks fan who spends a good amount of time online I’ve been exposed to a lot of discussion about the value of running vs. passing. A point used in favor of a rushing-focused attack is that good teams tend to run the ball a lot. This is usually met with the response that teams who are ahead will run to kill clock and minimize risk, meaning the causal arrow is backwards.</description>
     </item>
     
