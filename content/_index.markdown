@@ -7,4 +7,4 @@ title: Home
 <img src="images/ralphie.jpg" alt="ralphie" width="350"/>
 </center>
 
-Hello! I am a data scientist who currently serves as the Assistant Director of Quantitative Analysis for the Los Angeles Angels. Prior to my time with the Angels I got a Ph.D. in Political Science from the University of Michigan and a B.A. in Political Science from the University of Washington. I grew up near Seattle and currently live in Los Angeles with my wife and our dog, Ralphie.
+Hello! I am a data scientist who currently serves as the Director of Baseball Analytics for the Cincinnati Reds. Prior to my time with the Reds I got a Ph.D. in Political Science from the University of Michigan and spent five years with the Los Angeles Angels. I grew up near Seattle and currently live in Los Angeles with my wife and our dog, Ralphie.
