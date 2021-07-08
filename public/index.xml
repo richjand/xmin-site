@@ -6,10 +6,20 @@
     <description>Recent content in Home on Richard&#39;s Page</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 08 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 05 Jul 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Fun With Spotify&#39;s API</title>
+      <link>/post/2021/07/05/fun-with-spotify-s-api/</link>
+      <pubDate>Mon, 05 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021/07/05/fun-with-spotify-s-api/</guid>
+      <description>I’ve been interested in getting better with purrr’s map functions and have always wanted to get my hands dirty with the Spotify API so this post has a little bit of both. We’ll use the wonderful https://github.com/charlie86/spotifyr package to take a look at trends in which NFL players are hot topics of conversation on top Fantasy Football podcasts.
+The first step was to identify a list of podcasts and pull their information.</description>
+    </item>
     
     <item>
       <title>Measuring Run/Pass Tendencies with tidyModels and nflfastR</title>
