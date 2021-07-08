@@ -202,7 +202,7 @@ rb_mentions <- final_dat %>%
 ```
 
 ```{r, echo = F}
-top_10_rb <- rb_mentions %>%
+rb_mentions %>%
   ggplot(aes(x = release_date, y = mention_share)) +
   geom_line(alpha = .5) +
   geom_point(alpha = .5) +
