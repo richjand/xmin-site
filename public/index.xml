@@ -6,10 +6,19 @@
     <description>Recent content in Home on Richard&#39;s Page</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 07 Jul 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 10 Jul 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>New Post at Open Source Football</title>
+      <link>/post/2021/07/10/new-post-at-open-source-football/</link>
+      <pubDate>Sat, 10 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021/07/10/new-post-at-open-source-football/</guid>
+      <description>I have a new post up at Open Source Football where I build some multilevel models in stan to estimate team ability.</description>
+    </item>
     
     <item>
       <title>Fun With Spotify&#39;s API</title>
