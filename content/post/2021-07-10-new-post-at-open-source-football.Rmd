@@ -1,0 +1,8 @@
+---
+title: New Post at Open Source Football
+date: '2021-07-10'
+slug: new-post-at-open-source-football
+draft: no
+---
+
+I have a [new post](https://www.opensourcefootball.com/posts/2021-06-27-estimating-team-ability-from-epa/) up at Open Source Football where I build some multilevel models in stan to estimate team ability.
