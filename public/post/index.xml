@@ -12,6 +12,16 @@
     
     
     <item>
+      <title>In Appreciation of debugonce()</title>
+      <link>/post/2021/07/10/in-appreciation-of-debugonce/</link>
+      <pubDate>Sat, 10 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021/07/10/in-appreciation-of-debugonce/</guid>
+      <description>It’s not often I find a new base R functions but a coworker recently put me on to a function that I’ve been using a ton. Most of the R development work we do with the Reds involves developing inside of packages. That often means working with functions inside of functions inside of functions which can make debugging difficult when updating code.
+debugonce() is a function that Hadley mentions in Advanced R Chapter 22 but that I had never seen and see very little mention of elsewhere.</description>
+    </item>
+    
+    <item>
       <title>New Post at Open Source Football</title>
       <link>/post/2021/07/10/new-post-at-open-source-football/</link>
       <pubDate>Sat, 10 Jul 2021 00:00:00 +0000</pubDate>
