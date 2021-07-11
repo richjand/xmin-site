@@ -1,0 +1,17 @@
+---
+title: In Appreciation of debugonce()
+date: '2021-07-11'
+slug: in-appreciation-of-debugonce
+---
+
+It's not often I find a new base R function but a coworker recently put me on to one that I've been using a ton. Most of the R development work we do with the Reds involves developing inside of packages. That often means working with functions inside of functions inside of functions which can make debugging difficult when updating code.
+
+<code>debugonce()</code> is a function that Hadley mentions in [Advanced R Chapter 22](https://adv-r.hadley.nz/debugging.html) but that I had never seen and see very little mention of elsewhere. The user specifies a function name and the next time that function is used R will go into debug mode. It's nothing earth shattering but is extremely helpful!
+
+```{r}
+add_10 <- function(x) return(x + 10)
+
+debugonce(add_10)
+
+add_10(5)
+```
