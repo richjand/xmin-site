@@ -1,0 +1,25 @@
+---
+title: State Space Season Simulation
+author: Richard Anderson
+date: '2021-08-22'
+slug: state-space-season-simulation
+categories: []
+tags: []
+---
+
+A fairly common situation in my line of work is that you are attempting to understand the value of latent variables from various sources of data collected at irregular intervals (think measuring power from home runs). A common wrinkle is that the latent variable is changing over time and we want to understand how much the data we observed should affect our beliefs about the latent variable. One can approach this using a state space model where we observe values $y$ at time $t$ that are generated according to some latent variable $\mu_{t}$.
+
+Formally, our data generating process is:
+
+$y_{t} \sim N(\mu_{t}, \sigma)$
+$\mu_{t} \sim N(\mu_{t-1}, \sigma_{state})$
+
+This just says that $y$ is a noisy measure of ability, $\mu$, and that the expectation of $\mu$ in any given period is just $\mu$ from the previous period with some random noise $\sigma_{state}$. This model will learn the amount of period-to-period noise as well as the amount of noise in the mapping between $\mu$ and $y$ which will give us an estimate of how much we should update our beliefs about $\mu$ given what we observe in each period.
+
+We can extend this to multiple individuals by adding a prior for each individual's $\mu$.
+
+$y_{i,t} \sim N(\mu_{i,t}, \sigma)$
+$\mu_{i,t} \sim N(\mu_{i,t-1}, \sigma_{state})$
+$\mu \sim N(\mu_{ability}, \sigma_{mu})$
+
+As an example, let's 
