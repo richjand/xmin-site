@@ -1,9 +1,9 @@
 ---
-title: State Space Season Simulation
+title: State Space Season Simulations
 author: Richard Anderson
 date: '2021-08-23'
-slug: state-space-season-simulation
-draft: yes
+slug: state-space-season-simulations
+draft: no
 categories: []
 tags: []
 ---
@@ -36,7 +36,7 @@ $\mu_{i} \sim N(\mu_{ability}, \sigma_{mu})$
 
 The basics of the simulation are that each team has an initial ability $\mu_{i, 1}$ and that ability is changing over time. We see each team play another team 16 times and we are trying to infer the ability of the two teams involved in the game from the score of the game. 
 
-We'll set our number of teams to be 30 and the number of games to be 16. $\alpha$ is set to three and can be thought of as the built-in advantage for team 1 which in a real application would be something like a home field advantage, assuming team 1 is the home team. $\sigma$ is the amount of variance in the score difference given the ability of the two teams, $\sigma_{start}$ is the amount of variance in team ability in week 1, and $\sigma_{state}$ is the week to week variance in team ability.
+We'll set our number of teams to be 32 and the number of games to be 16. $\alpha$ is set to three and can be thought of as the built-in advantage for team 1 which in a real application would be something like a home field advantage, assuming that team 1 is the home team. $\sigma$ is the amount of variance in the score difference given the ability of the two teams, $\sigma_{start}$ is the amount of variance in team ability in week 1, and $\sigma_{state}$ is the week to week variance in team ability.
 
 In this example we have some kind of indicator about a team's ability going into week 1 that we'll call x_prior. This could be something like pre-season power rankings, performance in the previous season, or any number of other pieces of information that could give us a clue to how good a team is before we've watched them play.
 
@@ -242,4 +242,6 @@ filter(games, team_1 == 1 | team_2 == 1) %>%
   xlab('Week') +
   ylab('Team 1 Margin of Victory')
 ```
+
+## Concluding Thoughts
 
