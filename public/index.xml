@@ -6,10 +6,19 @@
     <description>Recent content in Home on Richard&#39;s Page</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 11 Jul 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 23 Aug 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Measuring Changes in Ability with State Space Models</title>
+      <link>/post/2021/08/23/state-space-season-simulations/</link>
+      <pubDate>Mon, 23 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021/08/23/state-space-season-simulations/</guid>
+      <description>A fairly common situation in my line of work is that you are attempting to understand the value of some latent variable from various sources of data collected at irregular intervals (think measuring power from home runs, exit velo, etc…). One wrinkle is that the latent variable is changing over time and we want to understand how much the data we observed should affect our beliefs about the latent variable.</description>
+    </item>
     
     <item>
       <title>In Appreciation of debugonce()</title>
